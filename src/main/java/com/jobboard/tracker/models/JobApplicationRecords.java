@@ -11,8 +11,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class JobApplicationRecords {
 
-	private long applicationsCount;
+	private long batchSize;
 	private long totalNumberOfApplications;
+	private Long batchBeginId;
+	private Long batchEndId;
+	private Long applicationsBeginId;
+	private Long applicationsEndId;
 	private ArrayList<JobApplication> jobApplications;
 	
 }

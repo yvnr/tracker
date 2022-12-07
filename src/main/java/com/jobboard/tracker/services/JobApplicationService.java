@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jobboard.tracker.entities.JobApplicationEntity;
+import com.jobboard.tracker.exceptions.DuplicateApplicationException;
 import com.jobboard.tracker.mappers.JobApplicationMapper;
 import com.jobboard.tracker.models.JobApplication;
 import com.jobboard.tracker.models.JobApplicationRecords;
@@ -26,8 +28,13 @@ public class JobApplicationService {
 	
 	public void persistJobApplication(JobApplication jobApplication) {
 		
-		jobApplicationMapper.addNewApplication(jobApplication);
-		logger.info("New Job Application added Successfully for user: {} from school: {}", jobApplication.getUser(), jobApplication.getSchool());
+		if(validationService.checkIfApplicationExist(jobApplication))
+			throw new DuplicateApplicationException("Application already existing");
+		JobApplicationEntity jobApplicationEntity = new JobApplicationEntity(jobApplication);
+		
+		jobApplicationMapper.addNewApplication(jobApplicationEntity);
+		jobApplication.setId(jobApplicationEntity.getId());
+		logger.info("New Job Application added Successfully for user: {} from school: {}", jobApplication.getUserId(), jobApplication.getUnivId());
 		
 		return;
 		
@@ -36,10 +43,15 @@ public class JobApplicationService {
 	public JobApplication updateExistingApplication(JobApplication jobApplication) {
 		
 		long recordIdToUpdate = jobApplication.getId();
-		validationService.validateId(recordIdToUpdate);
+		JobApplicationEntity jobApplicationExisting =  validationService.validateId(recordIdToUpdate);
 		logger.info("JobApplication with id: {} verified for existance successfully", jobApplication.getId());
 		
-		jobApplicationMapper.updateJobApplication(jobApplication);
+		jobApplicationExisting.prepareForUpdate(jobApplication);
+		if(validationService.checkIfApplicationExist(jobApplicationExisting))
+			throw new DuplicateApplicationException("Application with updated fields already exist");
+		
+		
+		jobApplicationMapper.updateJobApplication(jobApplicationExisting);
 		logger.info("JobApplication with id: {} updated successfully", jobApplication.getId());
 
 		return jobApplication;
@@ -53,17 +65,44 @@ public class JobApplicationService {
 		logger.info("JobApplication with id: {} deleted successfully", id);
 	}
 	
-	public JobApplicationRecords fetchjobApplications(long startId, long numberOfRecords) {
+	public JobApplicationRecords fetchjobApplications(long startId, long numberOfRecords, long userId, long univId) {
 		JobApplicationRecords jobApplications = new JobApplicationRecords();
 		
-		ArrayList<JobApplication> fetchedRecords = jobApplicationMapper.fetchJobApplications(startId, numberOfRecords);
+		ArrayList<JobApplicationEntity> fetchedRecords = jobApplicationMapper.fetchJobApplications(startId, numberOfRecords, userId, univId);
 		logger.info("Fetched {} Job Application from DataBase", fetchedRecords.size());
+		ArrayList<JobApplication> recordsToShare = new ArrayList<JobApplication>();
 		
-		jobApplications.setJobApplications(fetchedRecords);
-		jobApplications.setApplicationsCount(fetchedRecords.size());
-		jobApplications.setTotalNumberOfApplications(jobApplicationMapper.fetchJobApplicationsCount());
+		long beginId = Long.MAX_VALUE;
+		long endId = Long.MIN_VALUE;
 		
+		// parsing to UI required format
+		for(JobApplicationEntity currentEntity : fetchedRecords) {
+			JobApplication currentApplication = new JobApplication();
+			currentApplication.constructFromEntity(currentEntity);
+			recordsToShare.add(currentApplication);
+			
+			//keeping track of begin and end Id of the applications
+			
+			beginId = Math.min(beginId, currentApplication.getId());
+			endId = Math.max(endId, currentApplication.getId());
+		}
 		
+		if(recordsToShare.size() > 0) {
+			jobApplications.setBatchBeginId(beginId);
+			jobApplications.setBatchEndId(endId);
+		}
+		
+		Long recordsBeginId = jobApplicationMapper.getBeginId(userId, univId);
+		Long recordsEndId = jobApplicationMapper.getEndId(userId, univId);
+		
+		jobApplications.setJobApplications(recordsToShare);
+		jobApplications.setBatchSize(recordsToShare.size());
+		jobApplications.setTotalNumberOfApplications(jobApplicationMapper.fetchJobApplicationsCount(userId, univId));
+		jobApplications.setApplicationsBeginId(recordsBeginId);
+		jobApplications.setApplicationsEndId(recordsEndId);
+				
 		return jobApplications;
 	}
+	
+	
 }

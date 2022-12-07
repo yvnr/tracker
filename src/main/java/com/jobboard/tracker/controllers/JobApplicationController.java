@@ -1,6 +1,7 @@
 package com.jobboard.tracker.controllers;
 
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
@@ -20,10 +21,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jobboard.tracker.entities.JobApplicationEntity;
+import com.jobboard.tracker.exceptions.DuplicateApplicationException;
 import com.jobboard.tracker.exceptions.NoJobApplicationException;
 import com.jobboard.tracker.models.JobApplication;
 import com.jobboard.tracker.models.JobApplicationRecords;
@@ -40,12 +43,26 @@ public class JobApplicationController {
 	JobApplicationService jobApplicationService;
 	
 	@PostMapping("/job")
-	public ResponseEntity addNewJobApplication(@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication){
+	public ResponseEntity addNewJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication, 
+												@RequestHeader("X-user_id") @Validated @NotNull long userId, 
+												@RequestHeader("X-univ_id") @Validated @NotNull long univId){
 		
 		try{
-			logger.info("Recieved request to add new job application for user: {} from school: {}", jobApplication.getUser(), jobApplication.getSchool());
+			logger.info("Recieved request to add new job application for user: {} from school: {}", jobApplication.getUserId(), jobApplication.getUnivId());
+			jobApplication.setUserId(userId);
+			jobApplication.setUnivId(univId);
+			
 			jobApplicationService.persistJobApplication(jobApplication);
+			
 			return new ResponseEntity(jobApplication, HttpStatus.CREATED);
+		}
+		catch (DuplicateApplicationException e) {
+			logger.error("Unexpected erorr occured while adding new Job application, errorMessage: {}", e.getMessage());
+			HashMap<String, Object> errorMap = new HashMap();
+			errorMap.put("errorMessage", e.getMessage());
+			errorMap.put("timeStamp", LocalDateTime.now());
+			
+			return new ResponseEntity(errorMap, HttpStatus.BAD_REQUEST);
 		}
 		catch (Exception ex) {
 			logger.error("Unexpected erorr occured while adding new Job application, errorMessage: {}", ex.getMessage());
@@ -57,11 +74,20 @@ public class JobApplicationController {
 		}
 	}
 	
-	@PutMapping("/job")
-	public ResponseEntity updateJobApplication(@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication) {
+	
+	@PutMapping("/job/{applicationId}")
+	public ResponseEntity updateJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication,
+												@PathVariable @Validated @NotBlank @NotNull long applicationId,
+												@RequestHeader("X-user_id") @Validated @NotNull long userId, 
+												@RequestHeader("X-univ_id") @Validated @NotNull long univId) {
 		
 		try{
+			logger.info("Received timestamp is: " + jobApplication.getTime().toString());
 			logger.info("Received request to update Job Application record with Id: {}", jobApplication.getId());
+			
+			jobApplication.setUserId(userId);
+			jobApplication.setUnivId(univId);
+			jobApplication.setId(applicationId);
 			jobApplicationService.updateExistingApplication(jobApplication);
 			return new ResponseEntity(jobApplication, HttpStatus.OK);
 		}
@@ -85,7 +111,7 @@ public class JobApplicationController {
 
 	}
 	
-	@DeleteMapping("/job")
+	@DeleteMapping("/job/{id}")	
 	public ResponseEntity removeJobApplication(@PathVariable long id) {
 		
 		try {
@@ -116,12 +142,14 @@ public class JobApplicationController {
 	
 	
 	@GetMapping("/jobs")
-	public ResponseEntity fetchJobApplications(@RequestParam @Min(1) long startId, @RequestParam @Max(200) long numberOfRecords) {
+	public ResponseEntity fetchJobApplications(	@RequestParam @Min(1) long startId, @RequestParam @Max(200) long numberOfRecords,
+												@RequestHeader("X-user_id") @Validated @NotNull long userId, 
+												@RequestHeader("X-univ_id") @Validated @NotNull long univId) {
 		
 		try {
 			logger.info("Received request to fetch a maximum of {} Job Applications from id: {}", numberOfRecords, startId);
 
-			JobApplicationRecords jobApplications =  jobApplicationService.fetchjobApplications(startId, numberOfRecords);
+			JobApplicationRecords jobApplications =  jobApplicationService.fetchjobApplications(startId, numberOfRecords, userId, univId);
 			return new ResponseEntity(jobApplications, HttpStatus.OK);
 		}
 		catch (Exception e) {
