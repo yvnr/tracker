@@ -42,7 +42,7 @@ public class JobApplicationController {
 	@Autowired
 	JobApplicationService jobApplicationService;
 	
-	@PostMapping("/job")
+	@PostMapping("/application")
 	public ResponseEntity addNewJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication, 
 												@RequestHeader("X-user_id") @Validated @NotNull long userId, 
 												@RequestHeader("X-univ_id") @Validated @NotNull long univId){
@@ -75,7 +75,7 @@ public class JobApplicationController {
 	}
 	
 	
-	@PutMapping("/job/{applicationId}")
+	@PutMapping("/application/{applicationId}")
 	public ResponseEntity updateJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication,
 												@PathVariable @Validated @NotBlank @NotNull long applicationId,
 												@RequestHeader("X-user_id") @Validated @NotNull long userId, 
@@ -111,7 +111,7 @@ public class JobApplicationController {
 
 	}
 	
-	@DeleteMapping("/job/{id}")	
+	@DeleteMapping("/application/{id}")	
 	public ResponseEntity removeJobApplication(@PathVariable long id) {
 		
 		try {
@@ -141,7 +141,7 @@ public class JobApplicationController {
 	}
 	
 	
-	@GetMapping("/jobs")
+	@GetMapping("/application")
 	public ResponseEntity fetchJobApplications(	@RequestParam @Min(1) long startId, @RequestParam @Max(200) long numberOfRecords,
 												@RequestHeader("X-user_id") @Validated @NotNull long userId, 
 												@RequestHeader("X-univ_id") @Validated @NotNull long univId) {
