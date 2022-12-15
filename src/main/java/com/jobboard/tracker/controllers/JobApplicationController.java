@@ -46,9 +46,10 @@ public class JobApplicationController {
 												@RequestHeader("X-univ_id") @Validated @NotNull long univId){
 		
 		try{
-			logger.info("Recieved request to add new job application for user: {} from school: {}", jobApplication.getUserId(), jobApplication.getUnivId());
 			jobApplication.setUserId(userId);
 			jobApplication.setUnivId(univId);
+			logger.info("Recieved request to add new job application for user: {} from school: {}", jobApplication.getUserId(), jobApplication.getUnivId());
+			jobApplicationService.persistJobApplication(jobApplication);
 			return new ResponseEntity(jobApplication, HttpStatus.CREATED);
 		}
 		catch (DuplicateApplicationException e) {

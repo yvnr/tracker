@@ -48,13 +48,13 @@ public class JobApplicationAsEntity {
 	
 	private void setTimes(JobApplication jobApplication) {
 		if(jobApplication.getStatus().equals(JobStatusEnum.APPLIED))
-			this.appliedTime = jobApplication.getDate();
+			this.appliedTime = jobApplication.getTime();
 		else if(jobApplication.getStatus().equals(JobStatusEnum.ASSESSMENT))
-			this.assessmentTime = jobApplication.getDate();
+			this.assessmentTime = jobApplication.getTime();
 		else if(jobApplication.getStatus().equals(JobStatusEnum.INTERVIEW))
-			this.interviewTime = jobApplication.getDate();
+			this.interviewTime = jobApplication.getTime();
 		else if(jobApplication.getStatus().equals(JobStatusEnum.SELECTED) || jobApplication.getStatus().equals(JobStatusEnum.REJECTED))
-			this.responseTime = jobApplication.getDate();
+			this.responseTime = jobApplication.getTime();
 		return;
 	}
 	
