@@ -44,8 +44,8 @@ public class JobApplicationController {
 	
 	@PostMapping("/application")
 	public ResponseEntity addNewJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication, 
-												@RequestHeader("X-user_id") @Validated @NotNull long userId, 
-												@RequestHeader("X-univ_id") @Validated @NotNull long univId){
+												@RequestHeader("x-uid") @Validated @NotNull long userId, 
+												@RequestHeader("x-univ-id") @Validated @NotNull long univId){
 		
 		try{
 			jobApplication.setUserId(userId);
@@ -77,8 +77,8 @@ public class JobApplicationController {
 	@PutMapping("/application/{applicationId}")
 	public ResponseEntity updateJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication,
 												@PathVariable @Validated @NotBlank @NotNull long applicationId,
-												@RequestHeader("X-user_id") @Validated @NotNull long userId, 
-												@RequestHeader("X-univ_id") @Validated @NotNull long univId) {
+												@RequestHeader("x-uid") @Validated @NotNull long userId, 
+												@RequestHeader("x-univ-id") @Validated @NotNull long univId) {
 		
 		try{
 			logger.info("Received timestamp is: " + jobApplication.getTime().toString());
@@ -142,8 +142,8 @@ public class JobApplicationController {
 	
 	@GetMapping("/application")
 	public ResponseEntity fetchJobApplications(	@RequestParam @Min(1) long startId, @RequestParam @Max(200) long numberOfRecords,
-												@RequestHeader("X-user_id") @Validated @NotNull long userId, 
-												@RequestHeader("X-univ_id") @Validated @NotNull long univId) {
+												@RequestHeader("x-uid") @Validated @NotNull long userId, 
+												@RequestHeader("x-univ-id") @Validated @NotNull long univId) {
 		
 		try {
 			logger.info("Received request to fetch a maximum of {} Job Applications from id: {}", numberOfRecords, startId);
