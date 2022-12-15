@@ -7,6 +7,7 @@ import com.jobboard.tracker.entities.JobApplicationEntity;
 import com.jobboard.tracker.exceptions.NoJobApplicationException;
 import com.jobboard.tracker.mappers.JobApplicationMapper;
 import com.jobboard.tracker.models.JobApplication;
+import com.jobboard.tracker.models.JobApplicationAsEntity;
 
 @Service
 public class ValidationService {
@@ -14,8 +15,8 @@ public class ValidationService {
 	@Autowired
 	JobApplicationMapper jobApplicationMapper;
 	
-	public JobApplicationEntity validateId(long id) {
-		JobApplicationEntity jobApplicationInDB = jobApplicationMapper.findApplicationById(id);
+	public JobApplicationAsEntity validateId(long id) {
+		JobApplicationAsEntity jobApplicationInDB = jobApplicationMapper.findApplicationById(id);
 		if(jobApplicationInDB == null)
 			throw new NoJobApplicationException("No Job Application found with id: " + id);
 		return jobApplicationInDB;
@@ -30,7 +31,7 @@ public class ValidationService {
 		return false;
 	}
 	
-	public boolean checkIfApplicationExist(JobApplicationEntity jobApplication) {
+	public boolean checkIfApplicationExist(JobApplicationAsEntity jobApplication) {
 		int numEntries = 0;
 		numEntries = jobApplicationMapper.findApplicationByUniqueIdentifiersWithEntity(jobApplication);
 		if(numEntries > 0)

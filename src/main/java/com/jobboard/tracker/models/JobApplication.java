@@ -2,7 +2,6 @@ package com.jobboard.tracker.models;
 
 import java.util.Date;
 
-import com.jobboard.tracker.entities.JobApplicationEntity;
 import com.jobboard.tracker.enums.JobStatusEnum;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +27,7 @@ public class JobApplication {
 	private String location;
 	private Date time;
 	
-	public void constructFromEntity(JobApplicationEntity jobEntity) {
+	public void constructFromEntity(JobApplicationAsEntity jobEntity) {
 		this.id = jobEntity.getId();
 		this.userId = jobEntity.getUserId();
 		this.univId = jobEntity.getUnivId();
@@ -37,10 +36,10 @@ public class JobApplication {
 		this.status = JobStatusEnum.valueOf(jobEntity.getStatus());
 		this.jobId = jobEntity.getJobId();
 		this.location = jobEntity.getLocation();
-		setTime(jobEntity);
+		setTimeEntity(jobEntity);
 	}
 	
-	private void setTime(JobApplicationEntity jobEntity) {
+	private void setTimeEntity(JobApplicationAsEntity jobEntity) {
 		if(this.status.equals(JobStatusEnum.APPLIED))
 			time = jobEntity.getAppliedTime();
 		else if(this.status.equals(JobStatusEnum.ASSESSMENT))

@@ -8,10 +8,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.jobboard.tracker.entities.JobApplicationEntity;
 import com.jobboard.tracker.exceptions.DuplicateApplicationException;
 import com.jobboard.tracker.mappers.JobApplicationMapper;
 import com.jobboard.tracker.models.JobApplication;
+import com.jobboard.tracker.models.JobApplicationAsEntity;
 import com.jobboard.tracker.models.JobApplicationRecords;
 import com.jobboard.tracker.validation.ValidationService;
 
@@ -30,7 +30,7 @@ public class JobApplicationService {
 		
 		if(validationService.checkIfApplicationExist(jobApplication))
 			throw new DuplicateApplicationException("Application already existing");
-		JobApplicationEntity jobApplicationEntity = new JobApplicationEntity(jobApplication);
+		JobApplicationAsEntity jobApplicationEntity = new JobApplicationAsEntity(jobApplication);
 		
 		jobApplicationMapper.addNewApplication(jobApplicationEntity);
 		jobApplication.setId(jobApplicationEntity.getId());
@@ -43,7 +43,7 @@ public class JobApplicationService {
 	public JobApplication updateExistingApplication(JobApplication jobApplication) {
 		
 		long recordIdToUpdate = jobApplication.getId();
-		JobApplicationEntity jobApplicationExisting =  validationService.validateId(recordIdToUpdate);
+		JobApplicationAsEntity jobApplicationExisting =  validationService.validateId(recordIdToUpdate);
 		logger.info("JobApplication with id: {} verified for existance successfully", jobApplication.getId());
 		
 		jobApplicationExisting.prepareForUpdate(jobApplication);
@@ -68,7 +68,7 @@ public class JobApplicationService {
 	public JobApplicationRecords fetchjobApplications(long startId, long numberOfRecords, long userId, long univId) {
 		JobApplicationRecords jobApplications = new JobApplicationRecords();
 		
-		ArrayList<JobApplicationEntity> fetchedRecords = jobApplicationMapper.fetchJobApplications(startId, numberOfRecords, userId, univId);
+		ArrayList<JobApplicationAsEntity> fetchedRecords = jobApplicationMapper.fetchJobApplications(startId, numberOfRecords, userId, univId);
 		logger.info("Fetched {} Job Application from DataBase", fetchedRecords.size());
 		ArrayList<JobApplication> recordsToShare = new ArrayList<JobApplication>();
 		
@@ -76,7 +76,7 @@ public class JobApplicationService {
 		long endId = Long.MIN_VALUE;
 		
 		// parsing to UI required format
-		for(JobApplicationEntity currentEntity : fetchedRecords) {
+		for(JobApplicationAsEntity currentEntity : fetchedRecords) {
 			JobApplication currentApplication = new JobApplication();
 			currentApplication.constructFromEntity(currentEntity);
 			recordsToShare.add(currentApplication);

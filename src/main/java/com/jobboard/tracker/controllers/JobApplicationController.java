@@ -1,7 +1,7 @@
 package com.jobboard.tracker.controllers;
 
 
-import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
@@ -25,13 +25,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jobboard.tracker.entities.JobApplicationEntity;
 import com.jobboard.tracker.exceptions.DuplicateApplicationException;
 import com.jobboard.tracker.exceptions.NoJobApplicationException;
 import com.jobboard.tracker.models.JobApplication;
 import com.jobboard.tracker.models.JobApplicationRecords;
 import com.jobboard.tracker.services.JobApplicationService;
-import com.jobboard.tracker.validation.ValidationService;
 import com.sun.istack.NotNull;
 
 @RestController
@@ -51,9 +49,6 @@ public class JobApplicationController {
 			logger.info("Recieved request to add new job application for user: {} from school: {}", jobApplication.getUserId(), jobApplication.getUnivId());
 			jobApplication.setUserId(userId);
 			jobApplication.setUnivId(univId);
-			
-			jobApplicationService.persistJobApplication(jobApplication);
-			
 			return new ResponseEntity(jobApplication, HttpStatus.CREATED);
 		}
 		catch (DuplicateApplicationException e) {
