@@ -2,13 +2,6 @@ package com.jobboard.tracker.models;
 
 import java.util.ArrayList;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
 public class JobApplicationRecords {
 
 	private long batchSize;
@@ -18,5 +11,49 @@ public class JobApplicationRecords {
 	private Long applicationsBeginId;
 	private Long applicationsEndId;
 	private ArrayList<JobApplication> jobApplications;
+	
+	public long getBatchSize() {
+		return batchSize;
+	}
+	public void setBatchSize(long batchSize) {
+		this.batchSize = batchSize;
+	}
+	public long getTotalNumberOfApplications() {
+		return totalNumberOfApplications;
+	}
+	public void setTotalNumberOfApplications(long totalNumberOfApplications) {
+		this.totalNumberOfApplications = totalNumberOfApplications;
+	}
+	public Long getBatchBeginId() {
+		return batchBeginId;
+	}
+	public void setBatchBeginId(Long batchBeginId) {
+		this.batchBeginId = batchBeginId;
+	}
+	public Long getBatchEndId() {
+		return batchEndId;
+	}
+	public void setBatchEndId(Long batchEndId) {
+		this.batchEndId = batchEndId;
+	}
+	public Long getApplicationsBeginId() {
+		return applicationsBeginId;
+	}
+	public void setApplicationsBeginId(Long applicationsBeginId) {
+		this.applicationsBeginId = applicationsBeginId;
+	}
+	public Long getApplicationsEndId() {
+		return applicationsEndId;
+	}
+	public void setApplicationsEndId(Long applicationsEndId) {
+		this.applicationsEndId = applicationsEndId;
+	}
+	public ArrayList<JobApplication> getJobApplications() {
+		return jobApplications;
+	}
+	public void setJobApplications(ArrayList<JobApplication> jobApplications) {
+		this.jobApplications = jobApplications;
+	}
+	
 	
 }
