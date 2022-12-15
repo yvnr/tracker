@@ -44,8 +44,8 @@ public class JobApplicationController {
 	
 	@PostMapping("/application")
 	public ResponseEntity addNewJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication, 
-												@RequestHeader("x-uid") @Validated @NotNull long userId, 
-												@RequestHeader("x-univ-id") @Validated @NotNull long univId){
+												@RequestHeader("x-uid") @Validated @NotNull String userId, 
+												@RequestHeader("x-univ-id") @Validated @NotNull String univId){
 		
 		try{
 			jobApplication.setUserId(userId);
@@ -77,8 +77,8 @@ public class JobApplicationController {
 	@PutMapping("/application/{applicationId}")
 	public ResponseEntity updateJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication,
 												@PathVariable @Validated @NotBlank @NotNull long applicationId,
-												@RequestHeader("x-uid") @Validated @NotNull long userId, 
-												@RequestHeader("x-univ-id") @Validated @NotNull long univId) {
+												@RequestHeader("x-uid") @Validated @NotNull String userId, 
+												@RequestHeader("x-univ-id") @Validated @NotNull String univId) {
 		
 		try{
 			logger.info("Received timestamp is: " + jobApplication.getTime().toString());
@@ -99,7 +99,8 @@ public class JobApplicationController {
 			return new ResponseEntity(errorMap, HttpStatus.NOT_FOUND);
 		}
 		catch (Exception ex) {
-			logger.error("Unexpected error occurede while updating job application with id: {}, errorMessage is: {}", jobApplication.getId(), ex.getMessage());
+			ex.printStackTrace();
+			logger.error("Unexpected error occured while updating job application with id: {}, errorMessage is: {}", jobApplication.getId(), ex.getMessage());
 
 			HashMap<String, Object> errorMap = new HashMap();
 			errorMap.put("errorMessage", ex.getMessage());
@@ -142,8 +143,8 @@ public class JobApplicationController {
 	
 	@GetMapping("/application")
 	public ResponseEntity fetchJobApplications(	@RequestParam @Min(1) long startId, @RequestParam @Max(200) long numberOfRecords,
-												@RequestHeader("x-uid") @Validated @NotNull long userId, 
-												@RequestHeader("x-univ-id") @Validated @NotNull long univId) {
+												@RequestHeader("x-uid") @Validated @NotNull String userId, 
+												@RequestHeader("x-univ-id") @Validated @NotNull String univId) {
 		
 		try {
 			logger.info("Received request to fetch a maximum of {} Job Applications from id: {}", numberOfRecords, startId);
@@ -152,6 +153,8 @@ public class JobApplicationController {
 			return new ResponseEntity(jobApplications, HttpStatus.OK);
 		}
 		catch (Exception e) {
+			
+			e.printStackTrace();
 			logger.error("Unexpected error occured while fetching job applications, errorMessage is: {}", e.getMessage());
 
 			HashMap<String, Object> errorMap = new HashMap();

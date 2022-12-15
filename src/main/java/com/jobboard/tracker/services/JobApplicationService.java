@@ -65,7 +65,7 @@ public class JobApplicationService {
 		logger.info("JobApplication with id: {} deleted successfully", id);
 	}
 	
-	public JobApplicationRecords fetchjobApplications(long startId, long numberOfRecords, long userId, long univId) {
+	public JobApplicationRecords fetchjobApplications(long startId, long numberOfRecords, String userId, String univId) {
 		JobApplicationRecords jobApplications = new JobApplicationRecords();
 		
 		ArrayList<JobApplicationAsEntity> fetchedRecords = jobApplicationMapper.fetchJobApplications(startId, numberOfRecords, userId, univId);

@@ -12,6 +12,20 @@ public class JobApplicationRecords {
 	private Long applicationsEndId;
 	private ArrayList<JobApplication> jobApplications;
 	
+	public JobApplicationRecords() {
+	}
+	
+	public JobApplicationRecords(long batchSize, long totalNumberOfApplications, Long batchBeginId, Long batchEndId,
+			Long applicationsBeginId, Long applicationsEndId, ArrayList<JobApplication> jobApplications) {
+		super();
+		this.batchSize = batchSize;
+		this.totalNumberOfApplications = totalNumberOfApplications;
+		this.batchBeginId = batchBeginId;
+		this.batchEndId = batchEndId;
+		this.applicationsBeginId = applicationsBeginId;
+		this.applicationsEndId = applicationsEndId;
+		this.jobApplications = jobApplications;
+	}
 	public long getBatchSize() {
 		return batchSize;
 	}

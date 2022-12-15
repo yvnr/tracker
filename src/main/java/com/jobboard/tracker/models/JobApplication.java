@@ -8,8 +8,8 @@ import com.jobboard.tracker.enums.JobStatusEnum;
 public class JobApplication { 
 	
 	private long id;
-	private long userId;
-	private long univId;
+	private String userId;
+	private String univId;
 	private String company;
 	private String position;
 	private JobStatusEnum status;
@@ -17,6 +17,25 @@ public class JobApplication {
 	private String location;
 	private Date time;
 	
+	public JobApplication() {
+	}
+	
+	
+	public JobApplication(long id, String userId, String univId, String company, String position, JobStatusEnum status,
+			String jobId, String location, Date time) {
+		super();
+		this.id = id;
+		this.userId = userId;
+		this.univId = univId;
+		this.company = company;
+		this.position = position;
+		this.status = status;
+		this.jobId = jobId;
+		this.location = location;
+		this.time = time;
+	}
+	
+
 	public void constructFromEntity(JobApplicationAsEntity jobEntity) {
 		this.id = jobEntity.getId();
 		this.userId = jobEntity.getUserId();
@@ -51,19 +70,19 @@ public class JobApplication {
 		this.id = id;
 	}
 
-	public long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
-	public long getUnivId() {
+	public String getUnivId() {
 		return univId;
 	}
 
-	public void setUnivId(long univId) {
+	public void setUnivId(String univId) {
 		this.univId = univId;
 	}
 

@@ -50,10 +50,10 @@ public interface JobApplicationMapper {
 		@Result(property = "interviewTime", column = "interview_time"),
 		@Result(property = "responseTime", column = "response_time")
 	})
-	public ArrayList<JobApplicationAsEntity> fetchJobApplications(long startId, long numberOfRecords, long userId, long univId);
+	public ArrayList<JobApplicationAsEntity> fetchJobApplications(long startId, long numberOfRecords, String userId, String univId);
 	
 	@Select("select count(*) from job_applications_table where user_id = #{userId} and univ_id = #{univId}")
-	public Long fetchJobApplicationsCount(long userId, long univId);
+	public Long fetchJobApplicationsCount(String userId, String univId);
 	
 	@Select("select count(*) from job_applications_table where user_id = #{userId} and univ_id = #{univId} and company = #{company} and job_id = #{jobId} and status = #{status}")
 	public Long findApplicationByUniqueIdentifiers(JobApplication jobApplication);
@@ -63,9 +63,9 @@ public interface JobApplicationMapper {
 	public int findApplicationByUniqueIdentifiersWithEntity(JobApplicationAsEntity jobApplication);
 	
 	@Select("select id from job_applications_table where user_id = #{userId} and univ_id = #{univId} order by id limit 1")
-	public Long getBeginId(long userId, long univId);
+	public Long getBeginId(String userId, String univId);
 	
 	@Select("select id from job_applications_table where user_id = #{userId} and univ_id = #{univId} order by id DESC limit 1")
-	public Long getEndId(long userId, long univId);
+	public Long getEndId(String userId, String univId);
 
 }

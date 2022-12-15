@@ -19,12 +19,12 @@ public class JobApplicationEntity {
 	@Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-	 
+	
 	@Column(name = "user_id", length = 100, nullable = false, unique = false)
-	private long userId;
+	private String userId;
 	
 	@Column(name = "univ_id", length = 100, nullable = false, unique = false)
-	private long univId;
+	private String univId;
 	
 	@Column(name = "company", length = 100, nullable = false, unique = false)
 	private String company;
@@ -61,19 +61,19 @@ public class JobApplicationEntity {
 		this.id = id;
 	}
 
-	public long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
-	public long getUnivId() {
+	public String getUnivId() {
 		return univId;
 	}
 
-	public void setUnivId(long univId) {
+	public void setUnivId(String univId) {
 		this.univId = univId;
 	}
 
