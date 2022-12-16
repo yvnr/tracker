@@ -10,7 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-
+/**
+ * Creates job_applications_table in database
+ *
+ */
 @Entity(name = "job_applications_table")
 @Table(uniqueConstraints = {@UniqueConstraint(name = "uniqueApplicationConstraint", columnNames = {"user_id", "univ_id", "company", "job_id"})})
 public class JobApplicationEntity {
