@@ -1,7 +1,6 @@
 package com.jobboard.tracker.controllers;
 
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
@@ -12,8 +11,6 @@ import javax.validation.constraints.NotBlank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +28,7 @@ import com.jobboard.tracker.exceptions.DuplicateApplicationException;
 import com.jobboard.tracker.exceptions.NoJobApplicationException;
 import com.jobboard.tracker.models.JobApplication;
 import com.jobboard.tracker.models.JobApplicationRecords;
+import com.jobboard.tracker.models.JobApplicationsMetaData;
 import com.jobboard.tracker.services.JobApplicationService;
 import com.sun.istack.NotNull;
 
@@ -154,7 +152,6 @@ public class JobApplicationController {
 		}
 		catch (Exception e) {
 			
-			e.printStackTrace();
 			logger.error("Unexpected error occured while fetching job applications, errorMessage is: {}", e.getMessage());
 
 			HashMap<String, Object> errorMap = new HashMap();
@@ -165,4 +162,28 @@ public class JobApplicationController {
 		}
 		
 	}
+	
+	@GetMapping("/application/data")
+	public ResponseEntity fetchMetaData(@RequestHeader("x-uid") @Validated @NotNull String userId, 
+										@RequestHeader("x-univ-id") @Validated @NotNull String univId) {
+		
+		try {
+			
+			logger.info("Received request to fetch job applications meta data for user: {} from university: {}", userId, univId);
+			JobApplicationsMetaData jobApplicationsMetaData = jobApplicationService.fetchUserMetaData(userId, univId);
+			logger.info("Successfully fetched job applications meta data for user: {} from university: {}", userId, univId);
+
+			return new ResponseEntity(jobApplicationsMetaData, HttpStatus.OK);
+			
+		}
+		catch (Exception e) {
+			logger.error("Unexpected error occured while fetching meta data, errorMessage is: {}", e.getMessage());
+
+			HashMap<String, Object> errorMap = new HashMap();
+			errorMap.put("errorMessage", e.getMessage());
+			errorMap.put("timeStamp", LocalDateTime.now());
+			
+			return new ResponseEntity(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+			}
 }

@@ -68,4 +68,9 @@ public interface JobApplicationMapper {
 	@Select("select id from job_applications_table where user_id = #{userId} and univ_id = #{univId} order by id DESC limit 1")
 	public Long getEndId(String userId, String univId);
 
+	@Select("select count(*) from job_applications_table where user_id = #{userId} and univ_id = #{univId} and status = 'ASSESSMENT' or status = 'INTERVIEW'")
+	public Long fetchInprogressCountByUserId(String userId, String univId);
+	
+	@Select("select count(*) from job_applications_table where user_id = #{userId} and univ_id = #{univId} and status = 'SELECTED'")
+	public Long fetchJobOffersCountByUserId(String userId, String univId);
 }

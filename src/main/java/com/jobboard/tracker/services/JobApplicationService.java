@@ -13,6 +13,7 @@ import com.jobboard.tracker.mappers.JobApplicationMapper;
 import com.jobboard.tracker.models.JobApplication;
 import com.jobboard.tracker.models.JobApplicationAsEntity;
 import com.jobboard.tracker.models.JobApplicationRecords;
+import com.jobboard.tracker.models.JobApplicationsMetaData;
 import com.jobboard.tracker.validation.ValidationService;
 
 @Service
@@ -104,5 +105,14 @@ public class JobApplicationService {
 		return jobApplications;
 	}
 	
+	public JobApplicationsMetaData fetchUserMetaData(String userId, String univId) {
+		JobApplicationsMetaData jobApplicationsMetaData = new JobApplicationsMetaData();
+		
+		jobApplicationsMetaData.setTotalApplicationsCount(jobApplicationMapper.fetchJobApplicationsCount(userId, univId));
+		jobApplicationsMetaData.setInProgressCount(jobApplicationMapper.fetchInprogressCountByUserId(userId, univId));
+		jobApplicationsMetaData.setOffersCount(jobApplicationMapper.fetchJobOffersCountByUserId(userId, univId));
+		
+		return jobApplicationsMetaData;
+	}
 	
 }
