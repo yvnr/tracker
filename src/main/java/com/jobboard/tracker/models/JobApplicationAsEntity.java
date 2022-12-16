@@ -5,6 +5,10 @@ import java.util.Date;
 import com.jobboard.tracker.enums.JobStatusEnum;
 
 
+/**
+ * A POJO class replicating the columns of the database table job_application_table
+ *
+ */
 public class JobApplicationAsEntity {
 
 
@@ -17,10 +21,10 @@ public class JobApplicationAsEntity {
 	private String status; 
 	private String jobId;
 	private String location;
-	private Date appliedTime;
-	private Date assessmentTime;
-	private Date interviewTime;
-	private Date responseTime;
+	private Date appliedTime;	// the date when the job application is made
+	private Date assessmentTime;// he date when the user received assessment if already received
+	private Date interviewTime;	// the date when interview is done, if interview already
+	private Date responseTime;	// the date when the user received final response from a company, if already recieved
 	
 	public JobApplicationAsEntity() {
 	}
@@ -56,6 +60,10 @@ public class JobApplicationAsEntity {
 			
 	}
 	
+	/**
+	 * Sets the dates appropriately based on the status of the job application.
+	 * @param jobApplication the job application with required fields of the job application.
+	 */
 	private void setTimes(JobApplication jobApplication) {
 		if(jobApplication.getStatus().equals(JobStatusEnum.APPLIED))
 			this.appliedTime = jobApplication.getTime();
@@ -68,6 +76,10 @@ public class JobApplicationAsEntity {
 		return;
 	}
 	
+	/**
+	 * Sets the dates of future statuses to null since those status are not reached yet.
+	 * @param ord the enumeration index of the status
+	 */
 	private void setNextTimesToNull(int ord) {
 		for(int i = ord + 1; i < JobStatusEnum.values().length; i++) {
 			if(i == 0)
@@ -80,6 +92,11 @@ public class JobApplicationAsEntity {
 				this.responseTime = null;
 		}
 	}
+	
+	/**
+	 * Updates the fields of this object
+	 * @param updatedApplication Contains the updated values.
+	 */
 	public void prepareForUpdate(JobApplication updatedApplication) {
 		this.company = updatedApplication.getCompany();
 		this.position = updatedApplication.getPosition();

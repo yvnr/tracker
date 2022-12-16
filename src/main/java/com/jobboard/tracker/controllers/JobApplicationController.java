@@ -32,14 +32,27 @@ import com.jobboard.tracker.models.JobApplicationsMetaData;
 import com.jobboard.tracker.services.JobApplicationService;
 import com.sun.istack.NotNull;
 
+/**
+ * The class exposes all the APIs towards the user interface to add/update/delete/get job application by user. 
+ * It also exposes a GET API to get the statistics of applications made by the user.
+ * 
+ */
 @RestController
 public class JobApplicationController {
 
 	private final Logger logger = LogManager.getLogger(JobApplicationController.class);
 	
+	// Autowired indicates spring boot to inject the bean of specified type
 	@Autowired
-	JobApplicationService jobApplicationService;
+	JobApplicationService jobApplicationService;	// The service class
 	
+	/**
+	 * POST API: /application exposed towards the User Interface. The API allows user to add a new job application
+	 * @param jobApplication The JobApplication object containing all the details of the new application user wants to add
+	 * @param userId  The unique id assigned to user by the authenticator and is sent in request header
+	 * @param univId The unique id assigned to University by the authenticator and is sent in request header.
+	 * @return ResponseEntity object with response body and appropriate HTTP status code.
+	 */
 	@PostMapping("/application")
 	public ResponseEntity addNewJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication, 
 												@RequestHeader("x-uid") @Validated @NotNull String userId, 
@@ -48,9 +61,11 @@ public class JobApplicationController {
 		try{
 			jobApplication.setUserId(userId);
 			jobApplication.setUnivId(univId);
-			System.out.println("Recieved date: " + jobApplication.getTime());
 			logger.info("Recieved request to add new job application for user: {} from school: {}", jobApplication.getUserId(), jobApplication.getUnivId());
 			jobApplicationService.persistJobApplication(jobApplication);
+			logger.debug("The job application added for user: {} from school: {} is: {}", jobApplication.getUserId(), jobApplication.getUnivId(), jobApplication.toString());
+			logger.info("Successfully added new job application for user: {} from school: {}", jobApplication.getUserId(), jobApplication.getUnivId());
+
 			return new ResponseEntity(jobApplication, HttpStatus.CREATED);
 		}
 		catch (DuplicateApplicationException e) {
@@ -72,6 +87,14 @@ public class JobApplicationController {
 	}
 	
 	
+	/**
+	 * The PUT API: /application/{applicationId} exposed towards the user interface to allow user to update job application already added.
+	 * @param jobApplication The JobApplication object containing all updated details of the new application user wants to add
+	 * @param applicationId	The unique ID of the job application sent to User interface while adding the new job application
+	 * @param userId  The unique id assigned to user by the authenticator and is sent in request header
+	 * @param univId The unique id assigned to University by the authenticator and is sent in request header.
+	 * @return ResponseEntity object with response body and appropriate HTTP status code.
+	 */
 	@PutMapping("/application/{applicationId}")
 	public ResponseEntity updateJobApplication(	@Validated @NotNull @NotBlank @RequestBody JobApplication jobApplication,
 												@PathVariable @Validated @NotBlank @NotNull long applicationId,
@@ -79,14 +102,25 @@ public class JobApplicationController {
 												@RequestHeader("x-univ-id") @Validated @NotNull String univId) {
 		
 		try{
-			logger.info("Received timestamp is: " + jobApplication.getTime().toString());
-			logger.info("Received request to update Job Application record with Id: {}", jobApplication.getId());
+			logger.info("Received request to update Job Application with Id: {} for user id: {}, from school id: {}", jobApplication.getId(), userId, univId);
 			
 			jobApplication.setUserId(userId);
 			jobApplication.setUnivId(univId);
 			jobApplication.setId(applicationId);
+			
 			jobApplicationService.updateExistingApplication(jobApplication);
+			
+			logger.info("JobApplication with id: {} updated successfully", jobApplication.getId());
+			logger.debug("The updated application is: {}",jobApplication.toString());
 			return new ResponseEntity(jobApplication, HttpStatus.OK);
+		}
+		catch(DuplicateApplicationException dex) {
+			logger.error("Error while updating job application with id: {}, errorMessage is: {}", jobApplication.getId(), dex.getMessage());
+			HashMap<String, Object> errorMap = new HashMap();
+			errorMap.put("errorMessage", dex.getMessage());
+			errorMap.put("timeStamp", LocalDateTime.now());
+			
+			return new ResponseEntity(errorMap, HttpStatus.BAD_REQUEST);
 		}
 		catch (NoJobApplicationException e) {
 			logger.error("Error while updating job application with id: {}, errorMessage is: {}", jobApplication.getId(), e.getMessage());
@@ -97,7 +131,6 @@ public class JobApplicationController {
 			return new ResponseEntity(errorMap, HttpStatus.NOT_FOUND);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
 			logger.error("Unexpected error occured while updating job application with id: {}, errorMessage is: {}", jobApplication.getId(), ex.getMessage());
 
 			HashMap<String, Object> errorMap = new HashMap();
@@ -109,6 +142,11 @@ public class JobApplicationController {
 
 	}
 	
+	/**
+	 * The DELETE API: /application/{id} exposed towards the user interface to allow user delete a job application that was added already
+	 * @param id The unique ID assigned to the job application while adding it.
+	 * @return ResponseEntity with 201 HTTP status code if success, a 404 status code if id not found, 500 status code otherwise.
+	 */
 	@DeleteMapping("/application/{id}")	
 	public ResponseEntity removeJobApplication(@PathVariable long id) {
 		
@@ -139,15 +177,25 @@ public class JobApplicationController {
 	}
 	
 	
+	/**
+	 * The GET API: /application exposed towards the user interface to fetch all the job applications added to the system by the user. The API support pagination enabling the user interface fetch records in pages (i.e. few records at a time).
+	 * @param startId The unique Id of the job applications starting from which the job applications should be returned  
+	 * @param numberOfRecords The maximum number of job applications to be returned.
+	 * @param userId  The unique id assigned to user by the authenticator and is sent in request header
+	 * @param univId The unique id assigned to University by the authenticator and is sent in request header.
+	 * @return Returns a maximum of {numberOfRecords} job applications beginning from the startId.
+	 */
 	@GetMapping("/application")
-	public ResponseEntity fetchJobApplications(	@RequestParam @Min(1) long startId, @RequestParam @Max(200) long numberOfRecords,
+	public ResponseEntity fetchJobApplications(	@RequestParam @Min(1) long startId, @RequestParam @Max(2000) long numberOfRecords,
 												@RequestHeader("x-uid") @Validated @NotNull String userId, 
 												@RequestHeader("x-univ-id") @Validated @NotNull String univId) {
 		
 		try {
-			logger.info("Received request to fetch a maximum of {} Job Applications from id: {}", numberOfRecords, startId);
+			logger.info("Received request to fetch a maximum of {} Job Applications starting id: {} for user id: {} and school id: {}", numberOfRecords, startId, userId, univId);
 
 			JobApplicationRecords jobApplications =  jobApplicationService.fetchjobApplications(startId, numberOfRecords, userId, univId);
+			
+			logger.info("Successfully fetched {} Job Applications for user id: {} and school id: {}", jobApplications.getBatchSize(), userId, univId);
 			return new ResponseEntity(jobApplications, HttpStatus.OK);
 		}
 		catch (Exception e) {
@@ -163,6 +211,12 @@ public class JobApplicationController {
 		
 	}
 	
+	/**
+	 * The GET API: /application/data exposed towards the user interface and allows the UI to fetch statistics of the applications made by the user.
+	 * @param userId  The unique id assigned to user by the authenticator and is sent in request header
+	 * @param univId The unique id assigned to University by the authenticator and is sent in request header.
+	 * @return Returns the meta data of the job applications made by the user.
+	 */
 	@GetMapping("/application/data")
 	public ResponseEntity fetchMetaData(@RequestHeader("x-uid") @Validated @NotNull String userId, 
 										@RequestHeader("x-univ-id") @Validated @NotNull String univId) {

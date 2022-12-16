@@ -1,10 +1,14 @@
 package com.jobboard.tracker.models;
 
+/**
+ * The Meta data of the job applications of a user in the database.
+ *
+ */
 public class JobApplicationsMetaData {
 
-	long totalApplicationsCount;
-	long inProgressCount;
-	long offersCount;
+	long totalApplicationsCount;	// total number of applications in the database
+	long inProgressCount;			// total number of application which are in ASSESSMENT or INTERVIEW status in the database
+	long offersCount;				// total number of applications in the database which are in SELECTED status
 	
 	public JobApplicationsMetaData() {
 	}

@@ -4,18 +4,21 @@ import java.util.Date;
 
 import com.jobboard.tracker.enums.JobStatusEnum;
 
-
+/**
+ * A POJO Class for the JobApplication. Contains all the information about the job application
+ *
+ */
 public class JobApplication { 
 	
-	private long id;
-	private String userId;
-	private String univId;
-	private String company;
-	private String position;
-	private JobStatusEnum status;
-	private String jobId;
-	private String location;
-	private Date time;
+	private long id;	// unique id of the job application
+	private String userId;	// unique id of the user
+	private String univId;	// unique id of the university
+	private String company;	// company name
+	private String position;	// position title
+	private JobStatusEnum status;	// status of the job application
+	private String jobId;	//ID of the job applied to
+	private String location;	//location of the job
+	private Date time;	// Date at which the job is applied/assessed/interviewed/got response.
 	
 	public JobApplication() {
 	}
@@ -36,6 +39,10 @@ public class JobApplication {
 	}
 	
 
+	/**
+	 * Copies contents from a JobApplicationAsEntity object, strips unnecessary data.
+	 * @param jobEntity the jobentity with all the fields of the job application from the database.
+	 */
 	public void constructFromEntity(JobApplicationAsEntity jobEntity) {
 		this.id = jobEntity.getId();
 		this.userId = jobEntity.getUserId();
@@ -48,6 +55,10 @@ public class JobApplication {
 		setTimeEntity(jobEntity);
 	}
 	
+	/**
+	 * Sets the time appropriately based on the status of the job application.
+	 * @param jobEntity the jobentity with all the fields of the job application from the database.
+	 */
 	private void setTimeEntity(JobApplicationAsEntity jobEntity) {
 		if(this.status.equals(JobStatusEnum.APPLIED))
 			time = jobEntity.getAppliedTime();
@@ -66,10 +77,12 @@ public class JobApplication {
 		return id;
 	}
 
+
 	public void setId(long id) {
 		this.id = id;
 	}
 
+	
 	public String getUserId() {
 		return userId;
 	}

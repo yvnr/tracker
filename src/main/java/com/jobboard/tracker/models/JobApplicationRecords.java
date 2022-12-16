@@ -2,15 +2,19 @@ package com.jobboard.tracker.models;
 
 import java.util.ArrayList;
 
+/**
+ * A Java class to respond to API request. It contains some job applications and its meta-data.
+ *
+ */
 public class JobApplicationRecords {
 
-	private long batchSize;
-	private long totalNumberOfApplications;
-	private Long batchBeginId;
-	private Long batchEndId;
-	private Long applicationsBeginId;
-	private Long applicationsEndId;
-	private ArrayList<JobApplication> jobApplications;
+	private long batchSize;	// number of records in this batch
+	private long totalNumberOfApplications;	// total number or applications in database
+	private Long batchBeginId; // the start id of the job application in jobApplications list
+	private Long batchEndId;	// the highest id of the job application in jobApplications list
+	private Long applicationsBeginId; // the id of the oldest job application in the database
+	private Long applicationsEndId;	// the id of the latest job application in the database
+	private ArrayList<JobApplication> jobApplications; // the list of job applications
 	
 	public JobApplicationRecords() {
 	}
