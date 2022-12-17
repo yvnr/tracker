@@ -26,12 +26,12 @@ You can Also see the Coverage Report by Right Clicking on the tracker/src/test/j
 **DataBase**  The Microservice requires connection to PostgreSQL Database. We have fixed the credential of the database to be : username: postgres and password: lokesh123. In case you need to change these credentials, change the following properties in tracker/src/main/resources/application.properties file:
 
 *The Current values are:*
-spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
-spring.datasource.username=postgres
-spring.datasource.password=lokesh123 
+* spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+* spring.datasource.username=postgres
+* spring.datasource.password=lokesh123 
 
 *The values shoudl be in the below format if you want to update the credentials:*
-spring.datasource.url=jdbc:postgresql://localhost:5432/<database_name>
-spring.datasource.username=<username>
-spring.datasource.password=<password> 
+* spring.datasource.url=jdbc:postgresql://localhost:5432/<database_name>
+* spring.datasource.username=<username>
+* spring.datasource.password=<password> 
 
