@@ -1,0 +1,9 @@
+com.jobboard.tracker
+com.jobboard.tracker.controllers
+com.jobboard.tracker.entities
+com.jobboard.tracker.enums
+com.jobboard.tracker.exceptions
+com.jobboard.tracker.mappers
+com.jobboard.tracker.models
+com.jobboard.tracker.services
+com.jobboard.tracker.validation
