@@ -7,7 +7,7 @@ Install Maven in the local system. Verify by running "mvn" in the terminal.
 The system should have Java installed with atleast 1.8 version. Verify the java version by running *java -version* command in the terminal.
 
 **Run all the below Commands in tracker/ folder**
-+
+
 * Run *mvn clean install*  command in the terminal to pull all the required dependencies.
 * Run *mvn compile* to compiel the changes.
 * Run *mvn javadoc:javadoc* to generate Javadoc. The generated javadoc will be in *tracker/target/site/apidocs* folder. Open index.html file in this folder.
